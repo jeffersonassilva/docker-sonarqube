@@ -1,19 +1,17 @@
-version: '3.5'
+version: "3"
 services:
   web:
-    build: .
-    image: sonarqube-${SONAR_VERSION}
+    image: sonarqube:community
     container_name: ${APP_NAME}
     volumes:
       - ./conf:/opt/sonarqube/conf
       - ./logs:/opt/sonarqube/logs
     environment:
-    - SONAR_VERSION=${SONAR_VERSION}
-    - SONARQUBE_JDBC_URL=jdbc:postgresql://${DB_HOST}:5432/${DB_SCHEMA}
-    - SONARQUBE_JDBC_USERNAME=${DB_USER}
-    - SONARQUBE_JDBC_PASSWORD=${DB_PASSWORD}
+      - SONAR_JDBC_URL:jdbc:postgresql://${DB_HOST}:5432/${DB_SCHEMA}
+      - SONAR_JDBC_USERNAME:${DB_USER}
+      - SONAR_JDBC_PASSWORD:${DB_PASSWORD}
     ports:
-     - "${WEB_PORT}:9000"
+      - "${WEB_PORT}:9000"
     links:
       - ${DB_HOST}:db
     depends_on:
@@ -22,12 +20,12 @@ services:
     restart: on-failure
   db:
     container_name: ${APP_NAME}-db
-    image: postgres:alpine
+    image: postgres:13
     environment:
       POSTGRES_DB: ${DB_SCHEMA}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-    - ${DB_PORT}:5432
+      - ${DB_PORT}:5432
     tty: true
     restart: on-failure
